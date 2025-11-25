@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Foodplan 2021 - Меню на неделю FOODPLAN</title>
+    
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-light fixed-top navbar__opacity">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'img/logo.8d8f24edbb5f.svg' %}" height="55" width="189" alt="">
+                </a>
+                <h3 class="text-secondary mt-2 me-2">Стоимость: 599₽</h3>
+                <a href="{% url 'payment' %}" class="btn shadow-none btn-sm btn-outline-success foodplan_green foodplan__border_green">
+                    Оплатить
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+    <main style="margin-top: calc(2rem + 85px);">
+        
+        <section>
+            
+            <div class="container">
+                    {% if form.errors %}
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                {{ error }}<br>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                <h1><strong class="foodplan_green">Изменение подписки</strong></h1>
+                <h5 class="text-secondary mb-3">
+                    Вы можете изменить параметры вашей подписки. Новое меню будет сформировано с учетом новых предпочтений. 
+                    <p>4 типа меню: Классическое, Низкоуглеводное, Вегетарианское и Кето.</p>
+                </h5>
+                
+                <form method="POST" action="{% url 'change_order' %}">
+                    
+                    {% csrf_token %}
+
+                    <div class="row mb-5">
+                        {% for menu_type in MENU_TYPES %}
+                        <div class="col-6 col-md-3">
+                            <label for="menu_{{ menu_type.0 }}">
+                                <img src="{% static 'img/menu_'|add:menu_type.0|add:'.png' %}" 
+                                     alt="{{ menu_type.1 }}" 
+                                     class="w-100">
+                                <input type="radio"
+                                       name="menu_type"
+                                       value="{{ menu_type.0 }}"
+                                       id="menu_{{ menu_type.0 }}">
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                <h2><strong>Выберите Предпочтения</strong></h2>
+
+                <table class="table text-center text-truncate mb-5">
+                    <tbody>
+                        {% for tag in meal_tags %}
+                        <tr>
+                            <th scope="row" class="text-start">{{ tag.name }}</th>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                        name="prefers"
+                                        value="{{ tag.id }}"
+                                        id="tag_{{ tag.id }}"
+                                        class="form-check-input"
+                                        {% if tag.id in current_tag_ids %}checked{% endif %}>
+                                    <label class="form-check-label" for="tag_{{ tag.id }}"></label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    
+                        <tr>
+                            <th scope="row" class="text-start">Предпочтения</th>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    {% for tag in allergy_tags %}
+                                        <div class="form-check">
+                                            <input  type="checkbox"
+                                                    name="prefers"
+                                                    value="{{ tag.id }}"
+                                                    id="tag_{{ tag.id }}"
+                                                    class="form-check-input"
+                                                    {% if tag.id in current_tag_ids %}checked{% endif %}>
+                                            <label class="form-check-label" for="tag_{{ tag.id }}">
+                                                {{ tag.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-center my-5">
+                    <button type="submit" class="btn btn-primary w-50">Сохранить изменения</button>
+                </div>
+            </form>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>

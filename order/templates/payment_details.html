@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Foodplan 2021 - Меню на неделю FOODPLAN</title>
+</head>
+<section>
+    <div class="container">
+        <div class="card p-4 mb-4 foodplan__shadow">
+            <h2 class="mb-4 text-center">Оплата услуги</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">Информация о заказе</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Заказ: {{ order.id }}</strong> </p>
+                            <p><strong>Тип меню:</strong> {% if menu_tag %}{{ menu_tag.name }}{% else %}Не выбрано{% endif %}</p>
+                            <p><strong>Сумма:</strong> 599 ₽</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Введите данные карты для оплаты</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'payment_details' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="card_number" class="form-label">Номер карты</label>
+                                    <input type="text" class="form-control" id="card_number" name="card_number" maxlength="19" placeholder="0000 0000 0000 0000" required>
+                                </div>
+                                <div class="mb-3 row">
+                                    <div class="col">
+                                        <label for="card_expiry" class="form-label">Срок действия</label>
+                                        <input type="text" class="form-control" id="card_expiry" name="card_expiry" maxlength="5" placeholder="MM/YY" required>
+                                    </div>
+                                    <div class="col">
+                                        <label for="card_cvc" class="form-label">CVC</label>
+                                        <input type="text" class="form-control" id="card_cvc" name="card_cvc" maxlength="3" placeholder="000" required>
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                                    <button type="submit" class="btn btn-success btn-lg">Оплатить</button>
+                                    <a href="{% url 'payment' %}" class="btn btn-danger btn-lg">Отменить платеж</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<footer>
+    <nav class="navbar navbar-expand-md navbar-light mt-5">
+        <div class="container p-2">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'img/logo.8d8f24edbb5f.svg' %}" height="55" width="189" alt="">
+            </a>
+            <div class="footer__sideBtns d-flex">
+                <a href="#">
+                    <img src="{% static 'img/vk.png' %}" height="38" width="auto" alt="">
+                </a>
+            </div>
+        </div>
+    </nav>
+</footer>
+<footer class="footer pt-2" style="border-top: 1px solid lightgray;">
+    <div class="container d-flex flex-row justify-content-center mb-2">
+        <small class="text-center">
+            <h6>© Девман2022. Все права защищены. © Devman2022. All right reserved.</h6><a href="#"
+                class="link-secondary">Политика конфиденциальности</a>
+        </small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+crossorigin="anonymous"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const expiryInput = document.getElementById('card_expiry');
+        expiryInput.addEventListener('input', function() {
+            let value = expiryInput.value.replace(/[^0-9]/g, '');
+            if (value.length > 2) {
+                value = value.slice(0,2) + '/' + value.slice(2,4);
+            }
+            expiryInput.value = value.slice(0,5);
+        });
+        const cardInput = document.getElementById('card_number');
+        cardInput.addEventListener('input', function() {
+            let value = cardInput.value.replace(/\D/g, '').slice(0,16);
+            value = value.replace(/(.{4})/g, '$1 ').trim();
+            cardInput.value = value;
+        });
+    });
+</script>
